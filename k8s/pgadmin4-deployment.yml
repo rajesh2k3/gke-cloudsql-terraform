@@ -1,0 +1,68 @@
+# This manifest sets up a single pod with 1 replica. 
+# The pod contains two containers, pgAdmin4 and Cloud SQL Proxy.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pgadmin4-deployment
+  namespace: default
+  labels:
+    app: pgadmin4
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pgadmin4
+  template:
+    metadata:
+      labels:
+        app: pgadmin4
+    spec:
+      serviceAccount: postgres-ksa
+      containers:
+        # Using the official pgadmin4 image
+        - image: dpage/pgadmin4
+          imagePullPolicy: Always
+          name: pgadmin4
+          env:
+            - name: PGADMIN_DEFAULT_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  key: user
+                  name: postgres-credentials
+            - name: PGADMIN_DEFAULT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: postgres-credentials
+          resources: {}
+          ports:
+            - containerPort: 80
+              name: pgadmin4
+          volumeMounts:
+            - name: psql-server
+              mountPath: /pgadmin4/server-config
+        # Run the cloud sql proxy as a sidecar
+        # https://cloud.google.com/sql/docs/postgres/connect-kubernetes-engine#running_the_proxy_as_a_sidecar
+        - image: gcr.io/cloudsql-docker/gce-proxy:1.17
+          imagePullPolicy: Always
+          name: cloudsql-proxy
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+          resources: {}
+          # ConfigMap to load postgres db instance connection string
+          env:
+            - name: INSTANCE_CONNECTION
+              valueFrom:
+                configMapKeyRef:
+                  name: connectionname
+                  key: connectionname
+          command: 
+            - "/cloud_sql_proxy"
+            - "-instances=$(INSTANCE_CONNECTION)=tcp:5432"
+      volumes:
+        - name: psql-server
+          configMap:
+              name: psql-server
+      restartPolicy: Always
