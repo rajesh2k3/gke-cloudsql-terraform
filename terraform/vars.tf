@@ -9,7 +9,8 @@
 variable "project_id" {
   type = string
   description = "Google Cloud project ID (not name)"
-  default = "stately-minutia-318001"
+  // default = "stately-minutia-318001"
+  default = "developmentpoc"
 }
 
 variable "region" {
@@ -46,7 +47,8 @@ variable "k8s_sa_name" {
 variable "db_name" {
   type        = string
   description = "Name of the DB"
-  default     = "deloitte-challenge-test-database"
+  //default     = "deloitte-challenge-test-database"
+  default     = "db-ws9kiam-dev-database"
 }
 
 variable "db_username" {
