@@ -2,16 +2,16 @@
 # Configures Terraform workspace/provider settings.
 
 terraform {
-  required_version = ">= 0.13.0"
+  required_version = ">= 1.2.4"
   
   required_providers {
     google = {
       source  = "hashicorp/google"
-      version = "3.52.0"
+      version = "4.24.0"
     }
     kubernetes = {
       source  = "hashicorp/kubernetes"
-      version = ">= 2.0.1"
+      version = ">= 2.11.0"
     }
   }
 }
