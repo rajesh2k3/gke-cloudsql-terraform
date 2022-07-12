@@ -29,7 +29,9 @@ kubectl -n="${K8S_NAMESPACE}" create configmap connectionname \
 
 # Create the configmap which is used to import the db connection in pgadmin.
 echo 'Creating db connection Configmap for pgadmin import'
-echo '{"Servers":{"1":{"Name":"Dummy Database","Group":"deloitte-challenge-server-group","Port":5432,"Username":"'${POSTGRES_USER}'","Host":"localhost","SSLMode":"prefer","MaintenanceDB":"postgres"}}}' \
+#echo '{"Servers":{"1":{"Name":"Dummy Database","Group":"deloitte-challenge-server-group","Port":5432,"Username":"'${POSTGRES_USER}'","Host":"localhost","SSLMode":"prefer","MaintenanceDB":"postgres"}}}' \
+#> psql-server.json
+echo '{"Servers":{"1":{"Name":"Dummy Database","Group":"db-ws9kiam-dev-server-group","Port":5432,"Username":"'${POSTGRES_USER}'","Host":"localhost","SSLMode":"prefer","MaintenanceDB":"postgres"}}}' \
 > psql-server.json
 kubectl -n="${K8S_NAMESPACE}" create configmap psql-server \
   --from-file=psql-server.json \
